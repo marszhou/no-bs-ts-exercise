@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import './App.css'
 
 const Heading: React.FunctionComponent<{ title: string }> = ({ title }) => (
@@ -31,6 +37,15 @@ interface Todo {
 }
 
 type ActionType = { type: 'ADD'; text: string } | { type: 'REMOVE'; id: number }
+
+const useNumber = (initial: number) => useState(initial)
+type NumberType = ReturnType<typeof useNumber>[0]
+type SetNumberType = ReturnType<typeof useNumber>[1]
+
+const Incrementer: React.FunctionComponent<{
+  number: NumberType
+  setNumber: SetNumberType
+}> = ({ number, setNumber }) => <button onClick={() => setNumber(number+1)}>add - {number}</button>
 
 function App() {
   const onListClick = useCallback((item: string) => alert(item), [])
@@ -65,12 +80,14 @@ function App() {
   )
 
   const newTodoRef = useRef<HTMLInputElement>(null)
-  const onAddTodo = useCallback(()=> {
+  const onAddTodo = useCallback(() => {
     if (newTodoRef.current) {
-      dispatch({ type: 'ADD', text: newTodoRef.current.value})
+      dispatch({ type: 'ADD', text: newTodoRef.current.value })
       newTodoRef.current.value = ''
     }
   }, [])
+
+  const [number, setNumber] = useNumber(10)
 
   return (
     <div>
@@ -78,11 +95,12 @@ function App() {
       <Box>Hello There!</Box>
       <List items={['1', '2', '3']} onClick={onListClick} />
       <Box>{JSON.stringify(payload)}</Box>
+      <Incrementer number={number} setNumber={setNumber} />
       <Heading title="Todos" />
       {todos.map((todo) => (
         <div key={todo.id}>
           {todo.text}
-          <button onClick={() => dispatch({type: 'REMOVE', id: todo.id})}>
+          <button onClick={() => dispatch({ type: 'REMOVE', id: todo.id })}>
             remove
           </button>
         </div>
