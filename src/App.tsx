@@ -45,7 +45,30 @@ type SetNumberType = ReturnType<typeof useNumber>[1]
 const Incrementer: React.FunctionComponent<{
   number: NumberType
   setNumber: SetNumberType
-}> = ({ number, setNumber }) => <button onClick={() => setNumber(number+1)}>add - {number}</button>
+}> = ({ number, setNumber }) => (
+  <Button
+    title={`add - ${number}`}
+    onClick={() => setNumber(number + 1)}
+  ></Button>
+)
+
+const Button: React.FunctionComponent<
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > & { title: string }
+> = ({ children, style, title, ...rest }) => (
+  <button
+    style={{
+      fontSize: 'xx-large',
+      backgroundColor: 'red',
+      color: 'white',
+    }}
+    {...rest}
+  >
+    {title ?? children}
+  </button>
+)
 
 function App() {
   const onListClick = useCallback((item: string) => alert(item), [])
