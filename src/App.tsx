@@ -1,7 +1,6 @@
-import React, { useCallback, useRef } from 'react'
-import { useTodos } from './useTodos'
+import React, { useCallback, useRef, useState } from 'react'
+import { useTodos, useAddTodo, useRemoveTodo, TodosProvider } from './useTodos'
 import './App.css'
-import { render } from '@testing-library/react'
 
 const Heading: React.FunctionComponent<{
   title?: string
@@ -11,28 +10,31 @@ const Heading: React.FunctionComponent<{
 function UL<T>({
   items,
   render,
-  itemClick
+  itemClick,
 }: React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLUListElement>,
   HTMLUListElement
 > & {
   items: T[]
-  render: (item: T) => React.ReactNode,
+  render: (item: T) => React.ReactNode
   itemClick?: (item: T) => void
 }) {
   return (
     <ul>
       {items.map((item, index) => (
-        <li key={index} onClick={() => itemClick?.(item)}>{render(item)}</li>
+        <li key={index} onClick={() => itemClick?.(item)}>
+          {render(item)}
+        </li>
       ))}
     </ul>
   )
 }
 
 function App() {
-  const { todos, addTodo, removeTodo } = useTodos([
-    { id: 0, text: 'sleeping', done: false },
-  ])
+  const todos = useTodos()
+  const addTodo = useAddTodo()
+  const removeTodo = useRemoveTodo()
+
   const newTodoRef = useRef<HTMLInputElement>(null)
   const onAddTodo = useCallback(() => {
     if (newTodoRef.current) {
@@ -63,4 +65,25 @@ function App() {
   )
 }
 
-export default App
+const AppWrapper = () => {
+  const [a, setA] = useState(1)
+
+  return (
+    <TodosProvider
+      initialTodos={[{ id: 0, text: 'sleeping by Context', done: false }]}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '50% 50%',
+        }}
+      >
+        <App />
+        <App />
+      </div>
+      <button onClick={() => setA(a+1)}>add {a}</button>
+    </TodosProvider>
+  )
+}
+
+export default AppWrapper
